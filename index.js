@@ -11,13 +11,20 @@ const port=3000;
 env.config();
 
 const db=new pg.Client({
-  user: "postgres" || process.env.POSTGRES_USER,
-  host: "localhost" || process.env.POSTGRES_HOST,
-  database: "memory" || process.env.POSTGRES_DATABASE,
-  password: "taekook@7" || process.env.POSTGRES_PASSWORD,
-  port: 5432 || process.env.POSTGRES_PORT,
+  user: process.env.POSTGRES_USER,
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_DATABASE,
+  password: process.env.POSTGRES_PASSWORD,
+  port: process.env.POSTGRES_PORT,
 });
-db.connect();
+try{
+    await db.connect();
+    console.log("database connected");
+}
+catch{
+    console.log("error in connecting server");
+}
+//db.connect();
 
 
 
@@ -60,7 +67,6 @@ app.post("/register", async(req,res)=>{
         const existingUser=await db.query("SELECT * FROM users WHERE email=$1",[email]);
 
         if(existingUser.rows.length>0){
-            alert("User alredy Exists!! Use another email");
             res.render("register.ejs",{error: "Email already exists, use another email"});
         }
         else{
@@ -186,117 +192,8 @@ app.post("/delete", async (req, res) => {
     }
 });
 
-/*
-app.post("/delete",async(req,res)=>{
-    const titleToDelete=req.body.memoryTitle;
-    try{
-        const userId=await db.query("SELECT user_id FROM memories WHERE title=$1",[titleToDelete]).rows[0].user_id;
-        await db.query("DELETE FROM memories WHERE title=$1",[titleToDelete]);
-        const result=await db.query("SELECT * FROM memories WHERE user_id=$1",[userId]);
-        if(result.rows.length>0){
-            res.render("index.ejs",{details:result.rows});
-        }
-        else{
-            res.render("index.ejs");
-        }
-    }
-    catch(error){
-        console.error(error);
-    }
-});
-*/
-
-
-/*app.post("/delete",async(req,res)=>{
-    const userId=req.body.userId;
-    const titleToDelete=req.body.memoryTitle;
-    console.log(userId);
-    console.log(titleToDelete);
-    try{
-        await db.query("DELETE FROM memories WHERE user_id=$1 AND title=$2",[userId,titleToDelete]);
-        const result=await db.query("SELECT * FROM memories WHERE user_id=$1",[userId]);
-        if(result.rows.length>0){
-            const data=result.rows;
-            res.render("index.ejs",{details:data});
-        }
-        else{
-            res.render("index.ejs");
-        }
-    }
-    catch(error){
-        console.error(error);
-    }
-    /*try{
-        const userResult=await db.query("SELECT id FROM users WHERE email=$1",[email]);
-        if(userResult.rows.length>0){
-            const userId=userResult.rows[0].id;
-            console.log(userId);
-            const memoryResult=await db.query("SELECT id FROM memories WHERE user_id=$1 AND title=$2",[userId,titleToDelete]);
-            if(memoryResult.rows.length>0){
-                const memoryId=memoryResult.rows[0].id;
-                await db.query("DELETE FROM memories WHERE id=$1",[memoryId]);
-                const answer=await db.query("SELECT title, content,image FROM memories WHERE user_id=$1",[userId]);
-                res.render("index.ejs",{details:answer.rows});
-            }
-            else{
-                res.send("Memory not found");
-            }
-        }
-        else{
-            res.send("User not found");
-        }
-    }
-    catch(error){
-        console.error(error);
-    }
-});*/
-
 app.listen(port,()=>{
     console.log(`Server running on port ${port}`);
 });
 
 
-
-
-
-
-
-
-
-
-/*
-
-
-
-// Multer configuration for handling file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-app.use(upload.single("image"));
-
-
-
-
-app.post("/add", upload.single("image"),async(req,res)=>{
-    const email=req.body["email"];
-    const title=req.body["title"];
-    const content=req.body["content"];
-    const image=req.file.buffer;
-    try {
-        const userExists = await db.query("SELECT * FROM details WHERE email = $1", [email]);
-        if(userExists.rows.length>0){
-        await db.query("INSERT INTO information (email, title, content, image) VALUES ($1, $2, $3, $4) RETURNING id",[email, title, content, image]);
-        const result=await db.query("SELECT DISTINCT information.title, information.content, information.image FROM details LEFT JOIN information ON details.email=information.email WHERE details.email=$1",[email]);
-        const data=result.rows;
-        console.log(data[0].image);
-        res.render("index.ejs",{details:data})
-        }
-        else{
-            res.render("register.ejs",{error:"User not recognised, please register first"});
-        }
-        
-    } catch (error) {
-        console.error(error);
-    }
-})
-
-*/
