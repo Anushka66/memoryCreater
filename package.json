@@ -1,6 +1,12 @@
 {
   "main": "index.js",
   "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index"
+  },
+   "author": "Anushka Trivedi",
+  "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",
