@@ -11,11 +11,11 @@ const port=3000;
 env.config();
 
 const db=new pg.Client({
-  user: process.env.POSTGRES_USER,
-  host: process.env.POSTGRES_HOST,
-  database: process.env.POSTGRES_DATABASE,
-  password: process.env.POSTGRES_PASSWORD,
-  port: process.env.POSTGRES_PORT,
+  user: "postgres" || process.env.POSTGRES_USER,
+  host: "localhost" || process.env.POSTGRES_HOST,
+  database: "memory" || process.env.POSTGRES_DATABASE,
+  password: "taekook@7" || process.env.POSTGRES_PASSWORD,
+  port: 5432 || process.env.POSTGRES_PORT,
 });
 db.connect();
 
